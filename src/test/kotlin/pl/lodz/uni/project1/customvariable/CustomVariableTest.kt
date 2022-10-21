@@ -41,7 +41,7 @@ internal class CustomVariableTest {
                     CustomVariableDigit(
                         1, CustomVariableDigit(7, CustomVariableDigit(4, CustomVariableDigit(9, null)))
                     ),
-                    CustomVariableDigit(3, CustomVariableDigit(5, null))
+                    CustomVariableDigit(5, CustomVariableDigit(3, null))
                 )
             ),
             Arguments.of(
@@ -53,7 +53,7 @@ internal class CustomVariableTest {
                             CustomVariableDigit(4, CustomVariableDigit(5, null))
                         )
                     ),
-                    CustomVariableDigit(5, CustomVariableDigit(1, CustomVariableDigit(4, null)))
+                    CustomVariableDigit(4, CustomVariableDigit(1, CustomVariableDigit(5, null)))
                 )
             ),
             Arguments.of(
@@ -65,7 +65,19 @@ internal class CustomVariableTest {
                             CustomVariableDigit(0, CustomVariableDigit(5, null))
                         )
                     ),
-                    CustomVariableDigit(5, CustomVariableDigit(1, CustomVariableDigit(4, null)))
+                    CustomVariableDigit(4, CustomVariableDigit(1, CustomVariableDigit(5, null)))
+                )
+            ),
+            Arguments.of(
+                "504,004",
+                CustomVariable(
+                    CustomVariableDigit(
+                        1, CustomVariableDigit(
+                            4,
+                            CustomVariableDigit(0, CustomVariableDigit(5, null))
+                        )
+                    ),
+                    CustomVariableDigit(4, CustomVariableDigit(0, CustomVariableDigit(0, null)))
                 )
             ),
         )
@@ -84,8 +96,8 @@ internal class CustomVariableTest {
                 CustomVariable(
                     CustomVariableDigit(1, CustomVariableDigit(5, CustomVariableDigit(2, null))),
                     CustomVariableDigit(
-                        2,
-                        CustomVariableDigit(7, CustomVariableDigit(4, null))
+                        4,
+                        CustomVariableDigit(7, CustomVariableDigit(2, null))
                     )
                 ), "25,274"
             ),
@@ -99,8 +111,8 @@ internal class CustomVariableTest {
                         )
                     ),
                     CustomVariableDigit(
-                        2,
-                        CustomVariableDigit(2, CustomVariableDigit(5, null))
+                        5,
+                        CustomVariableDigit(2, CustomVariableDigit(2, null))
                     )
                 ), "-442,225"
             ),
