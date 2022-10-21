@@ -6,7 +6,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>uni.lodz.pl</groupId>
     <artifactId>Projekt1</artifactId>
@@ -14,7 +13,7 @@
     <name>Projekt 1</name>
     <description>Techniki algorytmiczne - Projekt 1</description>
     <properties>
-        <java.version>19</java.version>
+        <java.version>17</java.version>
         <kotlin.version>1.7.20</kotlin.version>
     </properties>
     <dependencies>
@@ -32,6 +31,12 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

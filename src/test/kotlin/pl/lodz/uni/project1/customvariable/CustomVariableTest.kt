@@ -14,8 +14,10 @@ internal class CustomVariableTest {
     fun testParseCustomVariable(input: String, expected: CustomVariable) {
         val result = CustomVariable.parseCustomVariable(input)
 
-        var integer: CustomVariableDigit? = result.firstInteger
-        var expectedInteger: CustomVariableDigit? = expected.firstInteger
+        assert(result.isPositive() == expected.isPositive())
+
+        var integer: CustomVariableDigit? = result.getFirstInteger()
+        var expectedInteger: CustomVariableDigit? = expected.getFirstInteger()
         while (integer != null || expectedInteger != null) {
             assert(integer!!.digit == expectedInteger!!.digit)
             expectedInteger = expectedInteger.nextDigit
@@ -37,7 +39,7 @@ internal class CustomVariableTest {
                 "947,35",
                 CustomVariable(
                     CustomVariableDigit(
-                        1, CustomVariableDigit(9, CustomVariableDigit(4, CustomVariableDigit(7, null)))
+                        1, CustomVariableDigit(7, CustomVariableDigit(4, CustomVariableDigit(9, null)))
                     ),
                     CustomVariableDigit(3, CustomVariableDigit(5, null))
                 )
@@ -47,8 +49,8 @@ internal class CustomVariableTest {
                 CustomVariable(
                     CustomVariableDigit(
                         -1, CustomVariableDigit(
-                            5,
-                            CustomVariableDigit(4, CustomVariableDigit(4, null))
+                            4,
+                            CustomVariableDigit(4, CustomVariableDigit(5, null))
                         )
                     ),
                     CustomVariableDigit(5, CustomVariableDigit(1, CustomVariableDigit(4, null)))
@@ -59,8 +61,8 @@ internal class CustomVariableTest {
                 CustomVariable(
                     CustomVariableDigit(
                         1, CustomVariableDigit(
-                            5,
-                            CustomVariableDigit(0, CustomVariableDigit(4, null))
+                            4,
+                            CustomVariableDigit(0, CustomVariableDigit(5, null))
                         )
                     ),
                     CustomVariableDigit(5, CustomVariableDigit(1, CustomVariableDigit(4, null)))
@@ -80,7 +82,7 @@ internal class CustomVariableTest {
         return Stream.of(
             Arguments.of(
                 CustomVariable(
-                    CustomVariableDigit(1, CustomVariableDigit(2, CustomVariableDigit(5, null))),
+                    CustomVariableDigit(1, CustomVariableDigit(5, CustomVariableDigit(2, null))),
                     CustomVariableDigit(
                         2,
                         CustomVariableDigit(7, CustomVariableDigit(4, null))
@@ -92,8 +94,8 @@ internal class CustomVariableTest {
                     CustomVariableDigit(
                         -1,
                         CustomVariableDigit(
-                            4,
-                            CustomVariableDigit(4, CustomVariableDigit(2, null))
+                            2,
+                            CustomVariableDigit(4, CustomVariableDigit(4, null))
                         )
                     ),
                     CustomVariableDigit(
