@@ -14,7 +14,8 @@ internal class CustomVariableCalculatorTest {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.add(a, b)
-        assert(result.equals(expected))
+        println("Result: $result")
+        assert(result.toString() == expected)
     }
 
     private fun testAddData(): Stream<Arguments?>? {
@@ -33,6 +34,7 @@ internal class CustomVariableCalculatorTest {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.subtract(a, b)
+        println("Result: $result")
         assert(result.equals(expected))
     }
 
@@ -51,6 +53,7 @@ internal class CustomVariableCalculatorTest {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.multiply(a, b)
+        println("Result: $result")
         assert(result.equals(expected))
     }
 
@@ -69,7 +72,9 @@ internal class CustomVariableCalculatorTest {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.divide(a, b)
+        println("Result: ${result.first}")
         assert(result.first.equals(expected))
+        println("Rest: ${result.second}")
         assert(result.second.equals(rest))
     }
 
