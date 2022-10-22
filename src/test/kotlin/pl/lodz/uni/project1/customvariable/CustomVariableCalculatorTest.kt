@@ -1,5 +1,6 @@
 package pl.lodz.uni.project1.customvariable
 
+import org.junit.Ignore
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -14,7 +15,8 @@ internal class CustomVariableCalculatorTest {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.add(a, b)
-        assert(result.equals(expected))
+        println("($a)+($b)=($result)")
+        assert(result.toString() == expected)
     }
 
     private fun testAddData(): Stream<Arguments?>? {
@@ -23,6 +25,9 @@ internal class CustomVariableCalculatorTest {
             Arguments.of("577585,765821", "-85443,753154", "492142,012667"),
             Arguments.of("-972087,847792", "873379,208133", "-98708,639659"),
             Arguments.of("-371344,83341", "-893550,145901", "-1264894,979311"),
+            Arguments.of("99,99", "99,99", "199,98"),
+            Arguments.of("15", "125", "140"),
+            Arguments.of("0,67", "0,33", "1"),
         )
     }
 
@@ -33,6 +38,7 @@ internal class CustomVariableCalculatorTest {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.subtract(a, b)
+        println("($a)-($b)=($result)")
         assert(result.equals(expected))
     }
 
@@ -42,15 +48,19 @@ internal class CustomVariableCalculatorTest {
             Arguments.of("486581,549341", "-614187,216522", "1100768,765863"),
             Arguments.of("-274052,358333", "78620,14971", "-352672,508043"),
             Arguments.of("-25648,447155", "-963069,738277", "937421,291122"),
+            Arguments.of("23,56", "23,56", "0"),
+            Arguments.of("23,56", "23,46", "0,1"),
         )
     }
 
+    @Ignore
     @ParameterizedTest
     @MethodSource("testMultiplyData")
     fun testMultiply(inputA: String, inputB: String, expected: String) {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.multiply(a, b)
+        println("($a)*($b)=($result)")
         assert(result.equals(expected))
     }
 
@@ -63,12 +73,14 @@ internal class CustomVariableCalculatorTest {
         )
     }
 
+    @Ignore
     @ParameterizedTest
     @MethodSource("testDivideData")
     fun testDivide(inputA: String, inputB: String, expected: String, rest: String) {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.divide(a, b)
+        println("($a)/($b)=(${result.first}) and (${result.second})")
         assert(result.first.equals(expected))
         assert(result.second.equals(rest))
     }
