@@ -16,16 +16,16 @@ internal class CustomVariableTest {
 
         assert(result.isPositive() == expected.isPositive())
 
-        var integer: CustomVariableDigit? = result.getFirstInteger()
-        var expectedInteger: CustomVariableDigit? = expected.getFirstInteger()
+        var integer: CustomVariableDigit? = result.getInt()
+        var expectedInteger: CustomVariableDigit? = expected.getInt()
         while (integer != null || expectedInteger != null) {
             assert(integer!!.digit == expectedInteger!!.digit)
             expectedInteger = expectedInteger.nextDigit
             integer = integer.nextDigit
         }
 
-        var float: CustomVariableDigit? = result.firstFloatingPointNumber
-        var expectedFloat: CustomVariableDigit? = expected.firstFloatingPointNumber
+        var float: CustomVariableDigit? = result.getFloat()
+        var expectedFloat: CustomVariableDigit? = expected.getFloat()
         while (float != null || expectedFloat != null) {
             assert(float!!.digit == expectedFloat!!.digit)
             expectedFloat = expectedFloat.nextDigit
@@ -41,7 +41,7 @@ internal class CustomVariableTest {
                     CustomVariableDigit(
                         1, CustomVariableDigit(7, CustomVariableDigit(4, CustomVariableDigit(9, null)))
                     ),
-                    CustomVariableDigit(3, CustomVariableDigit(5, null))
+                    CustomVariableDigit(5, CustomVariableDigit(3, null))
                 )
             ),
             Arguments.of(
@@ -53,7 +53,7 @@ internal class CustomVariableTest {
                             CustomVariableDigit(4, CustomVariableDigit(5, null))
                         )
                     ),
-                    CustomVariableDigit(5, CustomVariableDigit(1, CustomVariableDigit(4, null)))
+                    CustomVariableDigit(4, CustomVariableDigit(1, CustomVariableDigit(5, null)))
                 )
             ),
             Arguments.of(
@@ -65,7 +65,19 @@ internal class CustomVariableTest {
                             CustomVariableDigit(0, CustomVariableDigit(5, null))
                         )
                     ),
-                    CustomVariableDigit(5, CustomVariableDigit(1, CustomVariableDigit(4, null)))
+                    CustomVariableDigit(4, CustomVariableDigit(1, CustomVariableDigit(5, null)))
+                )
+            ),
+            Arguments.of(
+                "504,004",
+                CustomVariable(
+                    CustomVariableDigit(
+                        1, CustomVariableDigit(
+                            4,
+                            CustomVariableDigit(0, CustomVariableDigit(5, null))
+                        )
+                    ),
+                    CustomVariableDigit(4, CustomVariableDigit(0, CustomVariableDigit(0, null)))
                 )
             ),
         )
@@ -84,8 +96,8 @@ internal class CustomVariableTest {
                 CustomVariable(
                     CustomVariableDigit(1, CustomVariableDigit(5, CustomVariableDigit(2, null))),
                     CustomVariableDigit(
-                        2,
-                        CustomVariableDigit(7, CustomVariableDigit(4, null))
+                        4,
+                        CustomVariableDigit(7, CustomVariableDigit(2, null))
                     )
                 ), "25,274"
             ),
@@ -99,8 +111,8 @@ internal class CustomVariableTest {
                         )
                     ),
                     CustomVariableDigit(
-                        2,
-                        CustomVariableDigit(2, CustomVariableDigit(5, null))
+                        5,
+                        CustomVariableDigit(2, CustomVariableDigit(2, null))
                     )
                 ), "-442,225"
             ),
