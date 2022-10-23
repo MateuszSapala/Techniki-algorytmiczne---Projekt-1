@@ -61,16 +61,6 @@ class CustomVariable private constructor(
             return result
         }
 
-        private fun stringFromCustomVariable(variable: CustomVariableDigit?): String {
-            var string = ""
-            var iterator = variable
-            while (iterator != null) {
-                string = iterator.digit.toString() + string
-                iterator = iterator.nextDigit
-            }
-            return string
-        }
-
         private fun intCompareTo(a: CustomVariableDigit?, b: CustomVariableDigit?): Int {
             if (a == null || b == null) {
                 if (a == null) {
@@ -120,10 +110,8 @@ class CustomVariable private constructor(
 
     override fun toString(): String {
         val sign = if (isPositive()) "" else "-";
-        val int = stringFromCustomVariable(getInt())
         val comma = if (firstFloatingPointNumber != null) "," else ""
-        val float = stringFromCustomVariable(firstFloatingPointNumber)
-        return "$sign$int$comma$float"
+        return "$sign${getInt() ?: ""}$comma${getFloat() ?: ""}"
     }
 
     override fun compareTo(other: CustomVariable): Int {

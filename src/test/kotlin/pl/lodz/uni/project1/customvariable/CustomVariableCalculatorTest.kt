@@ -66,6 +66,12 @@ internal class CustomVariableCalculatorTest {
 
     private fun testMultiplyData(): Stream<Arguments?>? {
         return Stream.of(
+            Arguments.of("0,12", "0,18", "0,0216"),
+            Arguments.of("12", "18", "216"),
+            Arguments.of("12", "180", "2160"),
+            Arguments.of("1,2", "3,4", "4,08"),
+            Arguments.of("24,542", "0", "0"),
+            Arguments.of("999,999", "999,999", "999998,000001"),
             Arguments.of("36,134", "684,937", "24749,513558"),
             Arguments.of("653,307", "-744,528", "-486405,354096"),
             Arguments.of("-407,320", "879,215", "-358121,8538"),
