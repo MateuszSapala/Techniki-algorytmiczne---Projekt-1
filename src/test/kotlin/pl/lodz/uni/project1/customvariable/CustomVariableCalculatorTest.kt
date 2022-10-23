@@ -1,7 +1,8 @@
 package pl.lodz.uni.project1.customvariable
 
-import org.junit.Ignore
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -15,7 +16,7 @@ internal class CustomVariableCalculatorTest {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.add(a, b)
-        println("($a)+($b)=($result)")
+        println("testAdd: '$a'+'$b'='$result'")
         assert(result.toString() == expected)
     }
 
@@ -39,7 +40,7 @@ internal class CustomVariableCalculatorTest {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.subtract(a, b)
-        println("($a)-($b)=($result)")
+        println("testSubtract: '$a'-'$b'='$result'")
         assert(result.equals(expected))
     }
 
@@ -56,14 +57,13 @@ internal class CustomVariableCalculatorTest {
         )
     }
 
-    @Ignore
     @ParameterizedTest
     @MethodSource("testMultiplyData")
     fun testMultiply(inputA: String, inputB: String, expected: String) {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.multiply(a, b)
-        println("($a)*($b)=($result)")
+        println("testMultiply: '$a'*'$b'='$result'")
         assert(result.equals(expected))
     }
 
@@ -82,16 +82,48 @@ internal class CustomVariableCalculatorTest {
         )
     }
 
-    @Ignore
+    @ParameterizedTest
+    @MethodSource("testPrepareForDivideData")
+    fun testPrepareForDivide(
+        aString: String,
+        bString: String,
+        expectedIntA: String,
+        expectedFloatA: String,
+        expectedIntB: String
+    ) {
+        val a = CustomVariable.parseCustomVariable(aString)
+        val b = CustomVariable.parseCustomVariable(bString)
+        val (intA, floatA, intB) = CustomVariableCalculator.prepareForDivide(a, b)
+        println("testPrepareForDivide: '$a'/'$b'='$intA${if (floatA != null) ",$floatA" else ""}'/'$intB'")
+        assertAll(
+            { Assertions.assertEquals(expectedIntA, intA.toString()) },
+            { Assertions.assertEquals(expectedFloatA, floatA.toString()) },
+            { Assertions.assertEquals(expectedIntB, intB.toString()) },
+        )
+    }
+
+    private fun testPrepareForDivideData(): Stream<Arguments> {
+        return Stream.of(
+            Arguments.of("411,8", "22,7", "4118", "null", "227"),
+            Arguments.of("5782,4826", "46,28", "578248", "26", "4628"),
+            Arguments.of("47,28", "26,34", "4728", "null", "2634"),
+            Arguments.of("148,2", "39,36", "14820", "null", "3936"),
+            Arguments.of("34", "39,36", "3400", "null", "3936"),
+            Arguments.of("100", "10", "100", "null", "10"),
+        )
+    }
+
     @ParameterizedTest
     @MethodSource("testDivideData")
     fun testDivide(inputA: String, inputB: String, expected: String, rest: String) {
         val a = CustomVariable.parseCustomVariable(inputA)
         val b = CustomVariable.parseCustomVariable(inputB)
         val result = CustomVariableCalculator.divide(a, b)
-        println("($a)/($b)=(${result.first}) and (${result.second})")
-        assert(result.first.equals(expected))
-        assert(result.second.equals(rest))
+        println("testDivide: '$a'/'$b'='${result.first}'; rest='${result.second}'")
+        assertAll(
+            { Assertions.assertEquals(expected, result.first.toString()) },
+            { Assertions.assertEquals(rest, result.second.toString()) },
+        )
     }
 
     private fun testDivideData(): Stream<Arguments?>? {
@@ -100,6 +132,8 @@ internal class CustomVariableCalculatorTest {
             Arguments.of("257,844", "-26,346", "-9", "20,73"),
             Arguments.of("-199,647", "37,27", "-5", "-13,297"),
             Arguments.of("-252,123", "-15,457", "16", "-4,811"),
+            Arguments.of("-252,123", "1", "-252", "-0,123"),
+            Arguments.of("125", "5", "25", "0"),
         )
     }
 }

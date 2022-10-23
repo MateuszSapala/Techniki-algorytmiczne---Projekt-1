@@ -22,6 +22,8 @@ data class CustomVariableDigit(val digit: Byte, var nextDigit: CustomVariableDig
         return result
     }
 
+    fun getLast(): CustomVariableDigit? = get(depth())
+
     fun reverse(isInt: Boolean): CustomVariableDigit? {
         var x: CustomVariableDigit? = this
         var reversed: CustomVariableDigit? = null

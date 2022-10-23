@@ -141,4 +141,6 @@ class CustomVariable private constructor(
         }
         return this.toString() == other.toString()
     }
+
+    fun isZero(): Boolean = getInt()?.digit == (0).toByte() && getFloat() == null
 }

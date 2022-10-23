@@ -201,8 +201,85 @@ class CustomVariableCalculator {
             return Pair(result?.reverse(isInt), carried)
         }
 
-        fun divide(a: CustomVariable, b: CustomVariable): Pair<CustomVariable, CustomVariable> {
-            TODO("Not implemented yet")
+        fun divide(valA: CustomVariable, valB: CustomVariable): Pair<CustomVariable, CustomVariable> {
+            if (valB.isZero()) {
+                throw IllegalArgumentException("Tried to be too smart, but it doesn't work here")
+            }
+            val depthFloatB = valB.getFloat()?.depth() ?: -1
+            var (intA, floatA, intB) = prepareForDivide(valA, valB)
+            if (intA == null) {
+                return Pair(
+                    CustomVariable(valA.isPositive() == valB.isPositive(), CustomVariableDigit(0, null), null),
+                    CustomVariable(valA.isPositive() == valB.isPositive(), CustomVariableDigit(0, null), floatA)
+                )
+            }
+            var intAReversed = intA.reverse(true)
+            var valueFromWhichWeSubtract = CustomVariableDigit(intAReversed?.digit ?: 0, null)
+            intAReversed = intAReversed?.nextDigit
+
+            var result: CustomVariableDigit? = null
+            for (i in 0..intA.depth()) {
+                var numberOfSubtractions: Byte = 0
+                var subResult = subtract(
+                    CustomVariable(true, valueFromWhichWeSubtract, null),
+                    CustomVariable(true, intB, null)
+                )
+                while (subResult.isPositive()) {
+                    numberOfSubtractions++
+                    valueFromWhichWeSubtract = subResult.getInt() ?: CustomVariableDigit(0, null)
+                    subResult = subtract(
+                        CustomVariable(true, subResult.getInt(), null),
+                        CustomVariable(true, intB, null)
+                    )
+                }
+                result = if (numberOfSubtractions > 0) CustomVariableDigit(numberOfSubtractions, result) else result
+                if (intAReversed == null) {
+                    break
+                }
+                valueFromWhichWeSubtract = CustomVariableDigit(intAReversed.digit, valueFromWhichWeSubtract)
+                intAReversed = intAReversed.nextDigit
+            }
+            for (i in 0..depthFloatB) {
+                if (floatA != null) {
+                    floatA.setLast(valueFromWhichWeSubtract.digit)
+                } else {
+                    floatA = CustomVariableDigit(valueFromWhichWeSubtract.digit, null)
+                }
+                valueFromWhichWeSubtract = valueFromWhichWeSubtract.nextDigit ?: CustomVariableDigit(0, null)
+            }
+            while (floatA != null && floatA.digit == (0).toByte()) {
+                floatA = floatA.nextDigit
+            }
+            return Pair(
+                CustomVariable(valA.isPositive() == valB.isPositive(), result, null),
+                CustomVariable(valA.isPositive(), valueFromWhichWeSubtract, floatA)
+            )
+        }
+
+        fun prepareForDivide(
+            a: CustomVariable,
+            b: CustomVariable
+        ): Triple<CustomVariableDigit?, CustomVariableDigit?, CustomVariableDigit?> {
+            var intB: CustomVariableDigit? = b.getInt()
+            var floatB: CustomVariableDigit? = b.getFloat()
+            var intA = a.getInt()
+            var floatA = a.getFloat()
+            while (floatB != null) {
+                intB = CustomVariableDigit(floatB.getLast()?.digit ?: 0, intB)
+                if (floatB.nextDigit != null) {
+                    floatB.removeLast()
+                } else {
+                    floatB = null
+                }
+
+                intA = CustomVariableDigit(floatA?.getLast()?.digit ?: 0, intA)
+                if (floatA?.nextDigit != null) {
+                    floatA.removeLast()
+                } else {
+                    floatA = null
+                }
+            }
+            return Triple(intA, floatA, intB)
         }
     }
 }
