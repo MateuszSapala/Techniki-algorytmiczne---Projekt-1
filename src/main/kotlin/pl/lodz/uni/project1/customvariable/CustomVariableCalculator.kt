@@ -213,7 +213,7 @@ class CustomVariableCalculator {
                     CustomVariable(valA.isPositive() == valB.isPositive(), CustomVariableDigit(0, null), floatA)
                 )
             }
-            var intAReversed = intA.reverse(true)
+            var intAReversed = intA.reverse(false)
             var valueFromWhichWeSubtract = CustomVariableDigit(intAReversed?.digit ?: 0, null)
             intAReversed = intAReversed?.nextDigit
 
@@ -232,11 +232,17 @@ class CustomVariableCalculator {
                         CustomVariable(true, intB, null)
                     )
                 }
-                result = if (numberOfSubtractions > 0) CustomVariableDigit(numberOfSubtractions, result) else result
+                result = if (result != null || numberOfSubtractions > 0) CustomVariableDigit(
+                    numberOfSubtractions,
+                    result
+                ) else result
                 if (intAReversed == null) {
                     break
                 }
-                valueFromWhichWeSubtract = CustomVariableDigit(intAReversed.digit, valueFromWhichWeSubtract)
+                valueFromWhichWeSubtract = CustomVariableDigit(
+                    intAReversed.digit,
+                    if (valueFromWhichWeSubtract.nextDigit == null && valueFromWhichWeSubtract.digit == (0).toByte()) null else valueFromWhichWeSubtract
+                )
                 intAReversed = intAReversed.nextDigit
             }
             for (i in 0..depthFloatB) {
@@ -265,7 +271,12 @@ class CustomVariableCalculator {
             var intA = a.getInt()
             var floatA = a.getFloat()
             while (floatB != null) {
-                intB = CustomVariableDigit(floatB.getLast()?.digit ?: 0, intB)
+                intB = if (intB?.nextDigit == null && intB?.digit == (0).toByte()) {
+                    CustomVariableDigit(floatB.getLast()?.digit ?: 1, null)
+                } else {
+                    CustomVariableDigit(floatB.getLast()?.digit ?: 1, intB)
+                }
+
                 if (floatB.nextDigit != null) {
                     floatB.removeLast()
                 } else {

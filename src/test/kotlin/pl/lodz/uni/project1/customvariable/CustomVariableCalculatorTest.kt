@@ -110,6 +110,7 @@ internal class CustomVariableCalculatorTest {
             Arguments.of("148,2", "39,36", "14820", "null", "3936"),
             Arguments.of("34", "39,36", "3400", "null", "3936"),
             Arguments.of("100", "10", "100", "null", "10"),
+            Arguments.of("500", "0,5", "5000", "null", "5"),
         )
     }
 
@@ -134,6 +135,7 @@ internal class CustomVariableCalculatorTest {
             Arguments.of("-252,123", "-15,457", "16", "-4,811"),
             Arguments.of("-252,123", "1", "-252", "-0,123"),
             Arguments.of("125", "5", "25", "0"),
+            Arguments.of("500", "0,5", "1000", "0"),
         )
     }
 }
