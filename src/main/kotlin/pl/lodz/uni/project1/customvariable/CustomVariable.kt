@@ -10,8 +10,11 @@ class CustomVariable private constructor(
             valInt: CustomVariableDigit?,
             float: CustomVariableDigit?
         ): CustomVariable {
-            val sign: Byte = if (positive) 1 else -1
+            var sign: Byte = if (positive) 1 else -1
             val int = valInt ?: CustomVariableDigit(0, null)
+            if (float == null && (valInt == null || (valInt.digit == (0).toByte() && valInt.nextDigit == null))) {
+                sign = 1
+            }
             return CustomVariable(CustomVariableDigit(sign, int), float)
         }
 

@@ -26,6 +26,7 @@ internal class CustomVariableCalculatorTest {
             Arguments.of("-972087,847792", "873379,208133", "-98708,639659"),
             Arguments.of("-371344,83341", "-893550,145901", "-1264894,979311"),
             Arguments.of("99,99", "99,99", "199,98"),
+            Arguments.of("-99,99", "99,99", "0"),
             Arguments.of("15", "125", "140"),
             Arguments.of("0,67", "0,33", "1"),
         )
@@ -50,6 +51,8 @@ internal class CustomVariableCalculatorTest {
             Arguments.of("-25648,447155", "-963069,738277", "937421,291122"),
             Arguments.of("23,56", "23,56", "0"),
             Arguments.of("23,56", "23,46", "0,1"),
+            Arguments.of("25", "68", "-43"),
+            Arguments.of("-99,99", "99,99", "-199,98"),
         )
     }
 
