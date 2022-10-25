@@ -1,19 +1,23 @@
 package pl.lodz.uni.project1.customvariable
 
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 
 internal class CustomVariableDigitTest {
     private val testValue = CustomVariableDigit(5, CustomVariableDigit(8, CustomVariableDigit(2, null)))
 
     @Test
-    fun depth() {
-        assert(testValue.depth() == 2)
+    fun testSize() {
+        assert(testValue.size() == 2)
     }
 
     @Test
-    fun get() {
-        assert(testValue.get(0)!!.digit.toInt() == 5)
-        assert(testValue.get(1)!!.digit.toInt() == 8)
-        assert(testValue.get(2)!!.digit.toInt() == 2)
+    fun testGet() {
+        assertAll(
+            { Assertions.assertEquals(testValue.get(0)!!.digit, (5).toByte()) },
+            { Assertions.assertEquals(testValue.get(1)!!.digit, (8).toByte()) },
+            { Assertions.assertEquals(testValue.get(2)!!.digit, (2).toByte()) },
+        )
     }
 }

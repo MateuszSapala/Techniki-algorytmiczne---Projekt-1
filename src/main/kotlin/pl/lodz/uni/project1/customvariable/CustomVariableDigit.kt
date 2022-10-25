@@ -1,7 +1,7 @@
 package pl.lodz.uni.project1.customvariable
 
 data class CustomVariableDigit(val digit: Byte, var nextDigit: CustomVariableDigit?) {
-    fun depth(): Int {
+    fun size(): Int {
         var iterator = nextDigit
         var depth = 0
         while (iterator != null) {
@@ -22,7 +22,7 @@ data class CustomVariableDigit(val digit: Byte, var nextDigit: CustomVariableDig
         return result
     }
 
-    fun getLast(): CustomVariableDigit? = get(depth())
+    fun getLast(): CustomVariableDigit? = get(size())
 
     fun reverse(isInt: Boolean): CustomVariableDigit? {
         var x: CustomVariableDigit? = this
@@ -44,14 +44,15 @@ data class CustomVariableDigit(val digit: Byte, var nextDigit: CustomVariableDig
     }
 
     fun setLast(value: Byte) {
-        get(depth())?.nextDigit = CustomVariableDigit(value, null)
+        get(size())?.nextDigit = CustomVariableDigit(value, null)
     }
 
-    fun removeLast() {
+    fun removeLast(): CustomVariableDigit? {
         if (nextDigit == null) {
-            throw IndexOutOfBoundsException()
+            return null;
         }
-        get(depth() - 1)?.nextDigit = null
+        get(size() - 1)?.nextDigit = null
+        return this
     }
 
     override fun toString(): String {
@@ -63,4 +64,6 @@ data class CustomVariableDigit(val digit: Byte, var nextDigit: CustomVariableDig
         }
         return string
     }
+
+    fun isZero(): Boolean = nextDigit == null && digit == (0).toByte()
 }

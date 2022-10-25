@@ -3,8 +3,8 @@ package pl.lodz.uni.project1.customvariable
 class CustomVariableCalculator {
     companion object {
         fun add(a: CustomVariable, b: CustomVariable): CustomVariable {
-            val sameSign = a.isPositive() == b.isPositive()
-            if (!sameSign) {
+            // Subtract if variables have different sign e.g. '5'+"-3"->'5'-'3'
+            if (a.isPositive() != b.isPositive()) {
                 return subtract(a, CustomVariable(a.isPositive(), b.getInt(), b.getFloat()))
             }
             val floatResult = floatSum(a.getFloat(), b.getFloat())
@@ -13,21 +13,25 @@ class CustomVariableCalculator {
         }
 
         private fun floatSum(valA: CustomVariableDigit?, valB: CustomVariableDigit?): Pair<CustomVariableDigit?, Byte> {
+            // Simplify calculations if one of the variables is null
             if (valA == null || valB == null) {
                 return if (valA == null) Pair(valB, 0) else Pair(valA, 0)
             }
-            val dA = valA.depth()
-            val dB = valB.depth()
-            val maxDepth = if (dA >= dB) dA else dB
+            val sizeA = valA.size()
+            val sizeB = valB.size()
+            val biggestSize = if (sizeA >= sizeB) sizeA else sizeB
             var result: CustomVariableDigit? = null
             var carried: Byte = 0
-            for (i in maxDepth downTo 0) {
-                val a: Byte = if (i <= dA) valA.get(dA - i)!!.digit else 0
-                val b: Byte = if (i <= dB) valB.get(dB - i)!!.digit else 0
+            for (i in biggestSize downTo 0) {
+                //Getting digits in the same place from the end (if any exists)
+                val a: Byte = if (i <= sizeA) valA.get(sizeA - i)!!.digit else 0
+                val b: Byte = if (i <= sizeB) valB.get(sizeB - i)!!.digit else 0
                 val sum = (a + b + carried).toByte()
+                //Add a new number to the start of the list and calculate the carried value
                 result = CustomVariableDigit(sum.mod(10).toByte(), result)
                 carried = (sum / 10).toByte()
             }
+            //Return value and carried value
             return Pair(result?.reverse(false), carried)
         }
 
@@ -36,6 +40,7 @@ class CustomVariableCalculator {
             valB: CustomVariableDigit?,
             valCarried: Byte
         ): CustomVariableDigit? {
+            // Simplify calculations if one of the variables is null
             if (valA == null || valB == null) {
                 return valA ?: valB
             }
@@ -44,9 +49,11 @@ class CustomVariableCalculator {
             var varB = valB
             var result: CustomVariableDigit? = null
             while (varA != null || varB != null || carried > 0) {
+                //Getting digits in the same place from the start (if any exists)
                 val a = varA?.digit ?: 0
                 val b = varB?.digit ?: 0
                 val sum = (a + b + carried).toByte()
+                //Add a new number to the start of the list and calculate the carried value
                 result = CustomVariableDigit(sum.mod(10).toByte(), result)
                 carried = (sum / 10).toByte()
                 varA = varA?.nextDigit
@@ -57,13 +64,14 @@ class CustomVariableCalculator {
 
         fun subtract(valA: CustomVariable, valB: CustomVariable): CustomVariable {
             val change = valA.compareToWithoutSign(valB) < 0
-            val sameSign = valA.isPositive() == valB.isPositive()
-            if (!sameSign) {
+            // Add if variables have different sign e.g. '5'-"-3"->'5'+'3'
+            if (valA.isPositive() != valB.isPositive()) {
                 return add(
                     valA,
                     CustomVariable(valA.isPositive(), valB.getInt(), valB.getFloat())
                 )
             }
+            //To subtract smaller value from bigger
             val a = if (change) valB else valA
             val b = if (change) valA else valB
 
@@ -80,22 +88,23 @@ class CustomVariableCalculator {
             if (valA == null || valB == null) {
                 return if (valA == null) Pair(valB, 0) else Pair(valA, 0)
             }
-            val dA = valA.depth()
-            val dB = valB.depth()
-            val maxDepth = if (dA >= dB) dA else dB
+            val sizeA = valA.size()
+            val sizeB = valB.size()
+            val biggestSize = if (sizeA >= sizeB) sizeA else sizeB
             var result: CustomVariableDigit? = null
             var lent: Byte = 0
-            for (i in maxDepth downTo 0) {
-                val a: Byte = if (i <= dA) valA.get(dA - i)!!.digit else 0
-                val b: Byte = if (i <= dB) valB.get(dB - i)!!.digit else 0
-                var sum = (a - b - lent).toByte()
+            for (i in biggestSize downTo 0) {
+                val a: Byte = if (i <= sizeA) valA.get(sizeA - i)!!.digit else 0
+                val b: Byte = if (i <= sizeB) valB.get(sizeB - i)!!.digit else 0
+                var subtractionResult = (a - b - lent).toByte()
                 lent = 0
-                if (sum < 0) {
-                    sum = (sum + 10).toByte()
+                if (subtractionResult < 0) {
+                    subtractionResult = (subtractionResult + 10).toByte()
                     lent = 1
                 }
-                result = CustomVariableDigit(sum, result)
+                result = CustomVariableDigit(subtractionResult, result)
             }
+            //Return value and lent value that will be removed from integer
             return Pair(result?.reverse(false), lent)
         }
 
@@ -128,53 +137,71 @@ class CustomVariableCalculator {
         }
 
         fun multiply(a: CustomVariable, b: CustomVariable): CustomVariable {
-            var result = CustomVariable(a.isPositive() == b.isPositive(), null, null)
+            var result = multiplyFloat(b, a, a.isPositive() == b.isPositive())
+            result = multiplyInt(b, a, result)
+            return result
+        }
 
+        private fun multiplyFloat(
+            b: CustomVariable,
+            a: CustomVariable,
+            sameSign: Boolean
+        ): CustomVariable {
+            var result = CustomVariable(sameSign, null, null)
             var float = b.getFloat()
-            var floatDepth = float?.depth() ?: 0
+            var floatSize = float?.size() ?: 0
             while (float != null) {
-                val (floatMultiply, carried) = multiplyByDigit(a.getFloat(), float.digit, false)
-                var intMultiply = multiplyByDigit(a.getInt(), float.digit, true, carried).first
+                //Multiply the first number by each digit in the floating point portion of the second digit
+                val (floatMultiply, carried) = multiplyVariableByDigit(a.getFloat(), float.digit, false)
+                var intMultiply = multiplyVariableByDigit(a.getInt(), float.digit, true, carried).first
 
-                for (i in 0..floatDepth) {
+                //Move the comma forward e.g 12,3 * 0,2-> 2,46
+                for (i in 0..floatSize) {
                     floatMultiply?.setLast(intMultiply?.digit ?: 0)
                     intMultiply = intMultiply?.nextDigit
                 }
 
                 val multiplyByDigitResult = CustomVariable(a.isPositive() == b.isPositive(), intMultiply, floatMultiply)
+                //Add the newly multiplied value to the previous values
                 result = add(result, multiplyByDigitResult)
                 float = float.nextDigit
-                floatDepth--
+                floatSize--
             }
-
-            var int = b.getInt()
-            var intDepth = 0
-            while (int != null) {
-                var (floatMultiply, carried) = multiplyByDigit(a.getFloat(), int.digit, false)
-                var intMultiply = multiplyByDigit(a.getInt(), int.digit, true, carried).first
-
-                for (i in 1..intDepth) {
-                    intMultiply = CustomVariableDigit(
-                        floatMultiply?.get(floatMultiply.depth())?.digit ?: 0,
-                        intMultiply
-                    )
-                    if (floatMultiply?.nextDigit != null) {
-                        floatMultiply.removeLast()
-                    } else {
-                        floatMultiply = null
-                    }
-                }
-
-                val multiplyByDigitResult = CustomVariable(a.isPositive() == b.isPositive(), intMultiply, floatMultiply)
-                result = add(result, multiplyByDigitResult)
-                int = int.nextDigit
-                intDepth++
-            }
-
             return result
         }
 
-        private fun multiplyByDigit(
+        private fun multiplyInt(
+            b: CustomVariable,
+            a: CustomVariable,
+            valResult: CustomVariable
+        ): CustomVariable {
+            var result = valResult
+            var int = b.getInt()
+            var intSize = 0
+            while (int != null) {
+                //Multiply the first number by each digit in the integer part of the second digit
+                var (floatMultiply, carried) = multiplyVariableByDigit(a.getFloat(), int.digit, false)
+                var intMultiply = multiplyVariableByDigit(a.getInt(), int.digit, true, carried).first
+
+                ////Move the comma backward e.g. 1,23 * 20-> 24,6
+                for (i in 1..intSize) {
+                    intMultiply = CustomVariableDigit(
+                        floatMultiply?.get(floatMultiply.size())?.digit ?: 0,
+                        intMultiply
+                    )
+                    floatMultiply = floatMultiply?.removeLast()
+                }
+
+                val multiplyByDigitResult = CustomVariable(a.isPositive() == b.isPositive(), intMultiply, floatMultiply)
+                //Add the newly multiplied value to the previous values
+                result = add(result, multiplyByDigitResult)
+                int = int.nextDigit
+                intSize++
+            }
+            return result
+        }
+
+        private fun multiplyVariableByDigit(
             valA: CustomVariableDigit?,
             digit: Byte,
             isInt: Boolean,
@@ -205,47 +232,18 @@ class CustomVariableCalculator {
             if (valB.isZero()) {
                 throw IllegalArgumentException("Tried to be too smart, but it doesn't work here")
             }
-            val depthFloatB = valB.getFloat()?.depth() ?: -1
-            var (intA, floatA, intB) = prepareForDivide(valA, valB)
+            val sizeFloatB = valB.getFloat()?.size() ?: -1
+            //Multiply the numbers so that b is an integer
+            var (intA, floatA, intB) = multiplyNumbersToMakeDivisorAnInteger(valA, valB)
             if (intA == null) {
                 return Pair(
                     CustomVariable(valA.isPositive() == valB.isPositive(), CustomVariableDigit(0, null), null),
                     CustomVariable(valA.isPositive() == valB.isPositive(), CustomVariableDigit(0, null), floatA)
                 )
             }
-            var intAReversed = intA.reverse(false)
-            var valueFromWhichWeSubtract = CustomVariableDigit(intAReversed?.digit ?: 0, null)
-            intAReversed = intAReversed?.nextDigit
 
-            var result: CustomVariableDigit? = null
-            for (i in 0..intA.depth()) {
-                var numberOfSubtractions: Byte = 0
-                var subResult = subtract(
-                    CustomVariable(true, valueFromWhichWeSubtract, null),
-                    CustomVariable(true, intB, null)
-                )
-                while (subResult.isPositive()) {
-                    numberOfSubtractions++
-                    valueFromWhichWeSubtract = subResult.getInt() ?: CustomVariableDigit(0, null)
-                    subResult = subtract(
-                        CustomVariable(true, subResult.getInt(), null),
-                        CustomVariable(true, intB, null)
-                    )
-                }
-                result = if (result != null || numberOfSubtractions > 0) CustomVariableDigit(
-                    numberOfSubtractions,
-                    result
-                ) else result
-                if (intAReversed == null) {
-                    break
-                }
-                valueFromWhichWeSubtract = CustomVariableDigit(
-                    intAReversed.digit,
-                    if (valueFromWhichWeSubtract.nextDigit == null && valueFromWhichWeSubtract.digit == (0).toByte()) null else valueFromWhichWeSubtract
-                )
-                intAReversed = intAReversed.nextDigit
-            }
-            for (i in 0..depthFloatB) {
+            var (result, valueFromWhichWeSubtract) = divideInt(intA, intB)
+            for (i in 0..sizeFloatB) {
                 if (floatA != null) {
                     floatA.setLast(valueFromWhichWeSubtract.digit)
                 } else {
@@ -262,7 +260,56 @@ class CustomVariableCalculator {
             )
         }
 
-        fun prepareForDivide(
+        private fun divideInt(
+            intA: CustomVariableDigit,
+            intB: CustomVariableDigit?,
+        ): Pair<CustomVariableDigit?, CustomVariableDigit> {
+            var intAReversed = intA.reverse(false)
+            var valueFromWhichWeSubtract = CustomVariableDigit(intAReversed?.digit ?: 0, null)
+            intAReversed = intAReversed?.nextDigit
+            var result: CustomVariableDigit? = null
+            for (i in 0..intA.size()) {
+                val (numberOfSubtractions, value) = subtractForDivision(valueFromWhichWeSubtract, intB)
+                valueFromWhichWeSubtract = value
+                result = if (result != null || numberOfSubtractions > 0) CustomVariableDigit(
+                    numberOfSubtractions,
+                    result
+                ) else null
+
+                if (intAReversed == null) {
+                    break
+                }
+                valueFromWhichWeSubtract = CustomVariableDigit(
+                    intAReversed.digit,
+                    if (valueFromWhichWeSubtract.isZero()) null else valueFromWhichWeSubtract
+                )
+                intAReversed = intAReversed.nextDigit
+            }
+            return Pair(result, valueFromWhichWeSubtract)
+        }
+
+        private fun subtractForDivision(
+            value: CustomVariableDigit,
+            intB: CustomVariableDigit?
+        ): Pair<Byte, CustomVariableDigit> {
+            var valueFromWhichWeSubtract = value
+            var numberOfSubtractions: Byte = 0
+            var subResult = subtract(
+                CustomVariable(true, valueFromWhichWeSubtract, null),
+                CustomVariable(true, intB, null)
+            )
+            while (subResult.isPositive()) {
+                numberOfSubtractions++
+                valueFromWhichWeSubtract = subResult.getInt() ?: CustomVariableDigit(0, null)
+                subResult = subtract(
+                    CustomVariable(true, subResult.getInt(), null),
+                    CustomVariable(true, intB, null)
+                )
+            }
+            return Pair(numberOfSubtractions, valueFromWhichWeSubtract)
+        }
+
+        fun multiplyNumbersToMakeDivisorAnInteger(
             a: CustomVariable,
             b: CustomVariable
         ): Triple<CustomVariableDigit?, CustomVariableDigit?, CustomVariableDigit?> {
@@ -271,24 +318,13 @@ class CustomVariableCalculator {
             var intA = a.getInt()
             var floatA = a.getFloat()
             while (floatB != null) {
-                intB = if (intB?.nextDigit == null && intB?.digit == (0).toByte()) {
-                    CustomVariableDigit(floatB.getLast()?.digit ?: 1, null)
-                } else {
-                    CustomVariableDigit(floatB.getLast()?.digit ?: 1, intB)
-                }
-
-                if (floatB.nextDigit != null) {
-                    floatB.removeLast()
-                } else {
-                    floatB = null
-                }
-
+                intB = CustomVariableDigit(
+                    floatB.getLast()?.digit ?: 1,
+                    if (intB?.isZero() != false) null else intB
+                )
+                floatB = floatB.removeLast()
                 intA = CustomVariableDigit(floatA?.getLast()?.digit ?: 0, intA)
-                if (floatA?.nextDigit != null) {
-                    floatA.removeLast()
-                } else {
-                    floatA = null
-                }
+                floatA = floatA?.removeLast()
             }
             return Triple(intA, floatA, intB)
         }

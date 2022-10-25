@@ -93,7 +93,7 @@ internal class CustomVariableCalculatorTest {
     ) {
         val a = CustomVariable.parseCustomVariable(aString)
         val b = CustomVariable.parseCustomVariable(bString)
-        val (intA, floatA, intB) = CustomVariableCalculator.prepareForDivide(a, b)
+        val (intA, floatA, intB) = CustomVariableCalculator.multiplyNumbersToMakeDivisorAnInteger(a, b)
         println("testPrepareForDivide: '$a'/'$b'='$intA${if (floatA != null) ",$floatA" else ""}'/'$intB'")
         assertAll(
             { Assertions.assertEquals(expectedIntA, intA.toString()) },

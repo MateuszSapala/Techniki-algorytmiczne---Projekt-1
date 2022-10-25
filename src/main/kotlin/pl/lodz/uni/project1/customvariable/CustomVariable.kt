@@ -51,12 +51,12 @@ class CustomVariable private constructor(
             }
 
             return CustomVariable(
-                positive, numericStringToCustomVariableDigitChain(split[0]),
-                if (split.size == 2) numericStringToCustomVariableDigitChain(split[1]) else null
+                positive, numericStringToCustomVariableDigit(split[0]),
+                if (split.size == 2) numericStringToCustomVariableDigit(split[1]) else null
             )
         }
 
-        private fun numericStringToCustomVariableDigitChain(string: String): CustomVariableDigit? {
+        private fun numericStringToCustomVariableDigit(string: String): CustomVariableDigit? {
             var result: CustomVariableDigit? = null
             for (i in string.indices) {
                 result = CustomVariableDigit(string[i].digitToInt().toByte(), result)
@@ -71,8 +71,8 @@ class CustomVariable private constructor(
                 }
                 return 1
             }
-            val dA = a.depth()
-            val dB = b.depth()
+            val dA = a.size()
+            val dB = b.size()
             if (dA != dB) {
                 return if (dA > dB) 1 else -1
             }
@@ -92,8 +92,8 @@ class CustomVariable private constructor(
                 }
                 return 1
             }
-            val dA = a.depth()
-            val dB = b.depth()
+            val dA = a.size()
+            val dB = b.size()
             val d = if (dA > dB) dA else dB
             for (i in 0..d) {
                 val compare = (a.get(dA - i)?.digit ?: 0).compareTo(b.get(dB - i)?.digit ?: 0)
