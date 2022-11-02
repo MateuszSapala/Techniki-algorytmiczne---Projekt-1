@@ -13,6 +13,7 @@ internal class CustomVariableTest {
     @MethodSource("testParseCustomVariableData")
     fun testParseCustomVariable(input: String, expected: CustomVariable) {
         val result = CustomVariable.parseCustomVariable(input)
+        println("$input=>$result")
 
         assert(result.isPositive() == expected.isPositive())
 
@@ -41,6 +42,7 @@ internal class CustomVariableTest {
             Arguments.of("504,004", CustomVariable(true, listOf(5, 0, 4), listOf(0, 0, 4))),
             Arguments.of("125", CustomVariable(true, listOf(1, 2, 5), listOf())),
             Arguments.of(",125", CustomVariable(true, listOf(0), listOf(1, 2, 5))),
+            Arguments.of("123,0012500", CustomVariable(true, listOf(1, 2, 3), listOf(0, 0, 1, 2, 5))),
         )
     }
 
@@ -48,6 +50,7 @@ internal class CustomVariableTest {
     @MethodSource("testToStringData")
     fun testToString(input: CustomVariable, expected: String) {
         val result = input.toString()
+        println("$expected=>$result")
         assert(result == expected)
     }
 

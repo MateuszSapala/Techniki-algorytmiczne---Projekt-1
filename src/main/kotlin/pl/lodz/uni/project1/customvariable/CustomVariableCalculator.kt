@@ -85,17 +85,14 @@ class CustomVariableCalculator {
             valA: CustomVariableDigit?,
             valB: CustomVariableDigit?
         ): Pair<CustomVariableDigit?, Byte> {
-            if (valA == null || valB == null) {
-                return if (valA == null) Pair(valB, 0) else Pair(valA, 0)
-            }
-            val sizeA = valA.size()
-            val sizeB = valB.size()
+            val sizeA = valA?.size() ?: 0
+            val sizeB = valB?.size() ?: 0
             val biggestSize = if (sizeA >= sizeB) sizeA else sizeB
             var result: CustomVariableDigit? = null
             var lent: Byte = 0
             for (i in biggestSize downTo 0) {
-                val a: Byte = if (i <= sizeA) valA.get(sizeA - i)!!.digit else 0
-                val b: Byte = if (i <= sizeB) valB.get(sizeB - i)!!.digit else 0
+                val a: Byte = if (i <= sizeA && valA != null) valA.get(sizeA - i)!!.digit else 0
+                val b: Byte = if (i <= sizeB && valB != null) valB.get(sizeB - i)!!.digit else 0
                 var subtractionResult = (a - b - lent).toByte()
                 lent = 0
                 if (subtractionResult < 0) {

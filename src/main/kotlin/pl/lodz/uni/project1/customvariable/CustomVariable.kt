@@ -8,12 +8,16 @@ class CustomVariable private constructor(
         operator fun invoke(
             positive: Boolean,
             valInt: CustomVariableDigit?,
-            float: CustomVariableDigit?
+            valFloat: CustomVariableDigit?
         ): CustomVariable {
             var sign: Byte = if (positive) 1 else -1
             val int = valInt ?: CustomVariableDigit(0, null)
-            if (float == null && (valInt == null || (valInt.digit == (0).toByte() && valInt.nextDigit == null))) {
+            if (valFloat == null && (valInt == null || (valInt.digit == (0).toByte() && valInt.nextDigit == null))) {
                 sign = 1
+            }
+            var float = valFloat
+            while (float?.digit == (0).toByte()) {
+                float = float.nextDigit
             }
             return CustomVariable(CustomVariableDigit(sign, int), float)
         }
@@ -23,7 +27,6 @@ class CustomVariable private constructor(
             valInt: List<Byte>,
             valFloat: List<Byte>
         ): CustomVariable {
-            val sign: Byte = if (positive) 1 else -1
             var int: CustomVariableDigit? = null
             var float: CustomVariableDigit? = null
             for (item in valInt) {
@@ -32,12 +35,15 @@ class CustomVariable private constructor(
             for (item in valFloat) {
                 float = CustomVariableDigit(item, float)
             }
-            return CustomVariable(CustomVariableDigit(sign, int), float)
+            return CustomVariable(positive, int, float)
         }
 
         fun parseCustomVariable(input: String): CustomVariable {
             if (input.count { it == '-' } > 1) {
                 throw IllegalArgumentException("Provided more than one '-' in String input")
+            }
+            if (input.count { it == '-' } == 1 && input[0] != '-') {
+                throw IllegalArgumentException("A negative number should start with a '-' not have that sign in the middle of the input")
             }
             val positive = input[0] != '-'
 
@@ -142,5 +148,5 @@ class CustomVariable private constructor(
         return this.toString() == other.toString()
     }
 
-    fun isZero(): Boolean = getInt()?.digit == (0).toByte() && getFloat() == null
+    fun isZero(): Boolean = getInt()?.digit == (0).toByte() && getInt()?.nextDigit == null && getFloat() == null
 }
